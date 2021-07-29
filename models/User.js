@@ -1,6 +1,6 @@
 import mongoose from  'mongoose';
+import passportLocalMongoose from 'passport-local-mongoose';
 const {Schema} = mongoose;
-var passportLocalMongoose = require('passport-local-mongoose');
 
 var User = new Schema({
     

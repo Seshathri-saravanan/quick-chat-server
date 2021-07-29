@@ -1,6 +1,6 @@
 import {Router} from "express";
 import bodyParser from "body-parser";
-import User from "../models/User";
+import User from "../models/User.js";
 import passport from "passport";
 
 var router = Router();
@@ -35,6 +35,8 @@ router.post('/signup', (req, res, next) => {
     if(req.session){
        req.session.destroy();
        res.clearCookie('session-id');
-       res.redirect('/');
+       res.json({success: true, status: 'You are successfully logged out!'});
     }
  })
+
+ export default router;

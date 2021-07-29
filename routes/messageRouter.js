@@ -4,13 +4,19 @@ import mongoose from "mongoose";
 import Message from "../models/Message.js";
 const messageRouter = Router();
 messageRouter.use(bodyParser.json());
-messageRouter.route('/')
+messageRouter.route('/message')
 .get((req,res,next) => {
    Message.find({})
     .then((messages) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.json(messages);
+        var usermessages = [];
+        for(var i=0;i<messages.length;i++){
+           if(messages[i].senderUserName==req.user.username){
+              usermessages.push(messages[i]);
+           }
+        }
+        res.json(usermessages);
     }, (err) => next(err))
     .catch((err) => next(err));
 })
