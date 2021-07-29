@@ -14,6 +14,10 @@ messageRouter.route('/message')
 .get((req,res,next) => {
    Message.find({})
     .then((messages) => {
+        if(!req.user){
+            req.statusCode = 404;
+            return
+        }
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         var usermessages = [];
