@@ -30,7 +30,7 @@ function auth (req, res, next) {
 app.use(auth);
 */
 app.use(messageRouter);
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
    Message.find({}).then((msg)=>{
       console.log(msg);
    })
