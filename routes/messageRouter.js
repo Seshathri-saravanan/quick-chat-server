@@ -4,6 +4,12 @@ import mongoose from "mongoose";
 import Message from "../models/Message.js";
 const messageRouter = Router();
 messageRouter.use(bodyParser.json());
+messageRouter.route("/account")
+.get((req,res,next)=>{
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({account:{username:req.user.username}});
+})
 messageRouter.route('/message')
 .get((req,res,next) => {
    Message.find({})

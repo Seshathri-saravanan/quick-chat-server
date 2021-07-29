@@ -11,7 +11,7 @@ import sessionFileStore from "session-file-store";
 import authenticate from "./Authenticate.js";
 const fileStore = sessionFileStore(session);
 const app = express();
-const port = 3000;
+const port = 3013;
 const uri = "mongodb+srv://sesha:sesha3@cluster0.ldwlw.mongodb.net/quick-chat-db?retryWrites=true&w=majority";
 const connect = await Mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true },()=>{
    console.log("connected to the db server");
