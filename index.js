@@ -33,6 +33,9 @@ function auth (req, res, next) {
    if (!req.user) {
      var err = new Error('You are not authenticated!');
      err.status = 403;
+     res.json = {
+        username:req.user.username
+     }
      next(err);
    }
    else {
