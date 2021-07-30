@@ -8,7 +8,10 @@ import usersRouter from "./routes/users.js";
 import passport from "passport";
 import session from "express-session";
 import sessionFileStore from "session-file-store";
-import authenticate from "./Authenticate.js";
+import { Strategy as LocalStrategy } from "passport-local";
+import User from "./models/User.js";
+
+
 const fileStore = sessionFileStore(session);
 const app = express();
 const port = 3013;
@@ -25,6 +28,9 @@ app.use(session({
    resave:false,
    store:new fileStore()
 }))
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 app.use(passport.initialize());
 app.use(passport.session());
 function auth (req, res, next) {
@@ -43,6 +49,8 @@ app.use(usersRouter);
 app.use(auth);
 
 app.use(messageRouter);
+
+
 
 app.listen(process.env.PORT || port, () => {
    Message.find({}).then((msg)=>{
