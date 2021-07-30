@@ -6,6 +6,7 @@ const messageRouter = Router();
 messageRouter.use(bodyParser.json());
 messageRouter.route("/account")
 .get((req,res,next)=>{
+    console.log("account reoute",req.user);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.json({account:{username:req.user.username}});
@@ -14,17 +15,16 @@ messageRouter.route('/message')
 .get((req,res,next) => {
    Message.find({})
     .then((messages) => {
-        if(!req.user){
-            req.statusCode = 404;
-            return
-        }
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         var usermessages = [];
         for(var i=0;i<messages.length;i++){
-           if(messages[i].senderUserName==req.user.username){
+           if(messages[i].senderUserName==req.body.username){
               usermessages.push(messages[i]);
            }
+           else if(messages[i].receiverUserName==req.body.username){
+            usermessages.push(messages[i]);
+            }
         }
         res.json(usermessages);
     }, (err) => next(err))

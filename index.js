@@ -21,6 +21,7 @@ const connect = await Mongoose.connect(uri, { useNewUrlParser: true, useUnifiedT
    console.log("connected to the db server");
 })
 //connect(()=>{console.log("connected to the server")});
+/*
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
    name:"session-id",
@@ -48,7 +49,7 @@ function auth (req, res, next) {
 }
 app.use(usersRouter);
 app.use(auth);
-
+*/
 app.use(messageRouter);
 
 
