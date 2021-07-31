@@ -16,7 +16,7 @@ import { Server } from "socket.io";
 const fileStore = sessionFileStore(session);
 const app = express();
 app.use(cors());
-const port = 8080;
+const port = 3030;
 const uri = "mongodb+srv://sesha:sesha3@cluster0.ldwlw.mongodb.net/quick-chat-db?retryWrites=true&w=majority";
 const connect = await Mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true },()=>{
   // console.log("connected to the db server");
@@ -64,7 +64,11 @@ const io = new Server(httpServer, {
  
  io.on("connection", (socket) => {
    console.log("connected with socket",socket.id);
-   socket.on("message",data=>{console.log("message received from client",socket.id,data)})
+   socket.on("message",data=>{
+     Message.create(JSON.parse(data)).then(msg=>console.log("msg added to db",msg));
+     //console.log("message received from client",socket.id,data);
+     io.sockets.send(data);
+    })
  });
  
 httpServer.listen(process.env.PORT || port, () => {
