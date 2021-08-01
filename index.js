@@ -13,45 +13,31 @@ import User from "./models/User.js";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import cookieParser from "cookie-parser";
 const fileStore = sessionFileStore(session);
-const app = express();
-app.use(cors());
+
 const port = 3030;
 const uri = "mongodb+srv://sesha:sesha3@cluster0.ldwlw.mongodb.net/quick-chat-db?retryWrites=true&w=majority";
 const connect = await Mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true },()=>{
   // console.log("connected to the db server");
 })
-//connect(()=>{console.log("connected to the server")});
-/*
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({
-   name:"session-id",
-   secret:"bdsfmbsdfmnb3112",
-   saveUninitialized:false,
-   resave:false,
-   store:new fileStore()
-}))
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-app.use(passport.initialize());
-app.use(passport.session());
-function auth (req, res, next) {
-   console.log(req.user);
 
-   if (!req.user) {
-     var err = new Error('You are not authenticated!');
-     err.status = 403;
-     next(err);
-   }
-   else {
-         next();
-   }
-}
-
-app.use(auth);
-*/
+const app = express();
+app.use(cors());
+app.use(cookieParser("oisdfbkdufhejbfibufgvfuvsfu"));
 app.use(usersRouter);
+function auth(req,res,next){
+  console.log("signedcookies",req.signedCookies)
+  if(req.signedCookies.user){
+    var username = req.signedCookies.user;
+    User.findOne({username:username}).then(user=>next()).catch(err=>next(err));
+  }
+  else{
+    next(new Error("Unthorized"));
+  }
+}
+app.use(auth);
+
 app.use(messageRouter);
 
 const httpServer = createServer(app);

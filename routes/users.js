@@ -30,12 +30,14 @@ router.post('/signup', (req, res, next) => {
   .then((user) => {
       console.log('user found ', user);
       if(user.password!=req.body.password){
-        throw Error("incorrect password");
+        return next(new Error("incorrect password"));
       }
       else{
         res.statusCode = 200;
+        res.cookie('user',user.username,{signed:true})
         res.setHeader('Content-Type', 'application/json');
         res.json({account:{username:user.username}});
+        
       }
       
   }, (err) => next(err))
