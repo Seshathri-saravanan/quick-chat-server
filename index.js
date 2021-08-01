@@ -23,7 +23,13 @@ const connect = await Mongoose.connect(uri, { useNewUrlParser: true, useUnifiedT
 })
 
 const app = express();
-app.use(cors());
+app.use(cors(
+  {
+    origin: ['http://localhost:3000','https://quick-chat-2021.herokuapp.com'],
+    optionsSuccessStatus: 200,// For legacy browser support
+    methods: "GET, POST"
+  }
+));
 app.use(cookieParser("oisdfbkdufhejbfibufgvfuvsfu"));
 app.use(usersRouter);
 function auth(req,res,next){
