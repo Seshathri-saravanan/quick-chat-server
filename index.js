@@ -31,6 +31,14 @@ app.use(cors(
   }
 ));
 app.use(cookieParser("oisdfbkdufhejbfibufgvfuvsfu"));
+app.use(addHeaders)
+function addHeaders(req,res,next){
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+}
 app.use(usersRouter);
 function auth(req,res,next){
   console.log("signedcookies",req.signedCookies)
