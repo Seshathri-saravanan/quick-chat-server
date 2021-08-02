@@ -23,22 +23,28 @@ const connect = await Mongoose.connect(uri, { useNewUrlParser: true, useUnifiedT
 })
 
 const app = express();
+/*
 app.use(cors(
   {
-    origin: ['http://localhost:3000','https://quick-chat-2021.herokuapp.com'],
+    origin: 'http://localhost:3000',
     optionsSuccessStatus: 200,// For legacy browser support
-    methods: "GET, POST"
+    methods: "GET, POST",
+    allowedHeaders:"",
+    
   }
 ));
+*/
 app.use(cookieParser("oisdfbkdufhejbfibufgvfuvsfu"));
-app.use(addHeaders)
+
 function addHeaders(req,res,next){
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
-  res.header('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin','http://localhost:3000',);
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  console.log("setting acces con c header as true",req.headers,res.headers);
   next();
 }
+app.use(addHeaders)
 app.use(usersRouter);
 function auth(req,res,next){
   console.log("signedcookies",req.signedCookies)
@@ -47,7 +53,7 @@ function auth(req,res,next){
     User.findOne({username:username}).then(user=>next()).catch(err=>next(err));
   }
   else{
-    next(new Error("Unthorized"));
+    next(new Error("UnAuthorized"));
   }
 }
 app.use(auth);
@@ -57,7 +63,7 @@ app.use(messageRouter);
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
    cors: {
-     origin: ["http://localhost:3000","https://quick-chat-2021-server.herokuapp.com"],
+     origin: "*",
      methods: ["GET", "POST"]
    }
  });

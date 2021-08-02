@@ -34,9 +34,11 @@ router.post('/signup', (req, res, next) => {
       }
       else{
         res.statusCode = 200;
-        res.cookie('user',user.username,{signed:true})
+        res.cookie('user',user.username,{signed:true,maxAge:900000})
         res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Credentials', true);
         res.json({account:{username:user.username}});
+        console.log("setting credn headers",res.getHeaders())
         
       }
       

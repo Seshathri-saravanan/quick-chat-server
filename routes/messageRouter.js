@@ -10,7 +10,7 @@ messageRouter.route("/account")
     console.log("account reoute",req.user);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    res.json({account:{username:req.user.username}});
+    res.json({account:{username:req.signedCookies.user}});
 })
 messageRouter.route("/contacts")
 .get((req,res,next)=>{
