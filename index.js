@@ -37,7 +37,7 @@ app.use(cors(
 app.use(cookieParser("oisdfbkdufhejbfibufgvfuvsfu"));
 
 function addHeaders(req,res,next){
-  res.setHeader('Access-Control-Allow-Origin','http://localhost:3000',);
+  res.setHeader('Access-Control-Allow-Origin','https://quick-chat-2021.herokuapp.com',);
   res.setHeader('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
   res.setHeader('Access-Control-Allow-Credentials', true);
