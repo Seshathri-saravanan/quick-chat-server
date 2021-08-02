@@ -34,7 +34,7 @@ router.post('/signup', (req, res, next) => {
       }
       else{
         res.statusCode = 200;
-        res.cookie('user',user.username,{signed:true,maxAge:900000})
+        res.cookie('user',user.username,{signed:true,maxAge:900000000,sameSite:"none",secure:true})
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Access-Control-Allow-Credentials', true);
         res.json({account:{username:user.username}});
