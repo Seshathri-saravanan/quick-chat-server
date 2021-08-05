@@ -71,9 +71,9 @@ const io = new Server(httpServer, {
  io.on("connection", (socket) => {
    console.log("connected with socket",socket.id);
    socket.on("message",data=>{
-     Message.create(JSON.parse(data)).then(msg=>console.log("msg added to db",msg));
+     Message.create(JSON.parse(data)).then(msg=>io.sockets.send(JSON.stringify(msg)));
      //console.log("message received from client",socket.id,data);
-     io.sockets.send(data);
+     
     })
  });
  
