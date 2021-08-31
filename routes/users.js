@@ -48,11 +48,9 @@ router.post('/signup', (req, res, next) => {
  });
 
  router.get('/logout',(req,res)=>{
-    if(req.session){
-       req.session.destroy();
-       res.clearCookie('session-id');
-       res.json({success: true, status: 'You are successfully logged out!'});
-    }
+   console.log("logging out");
+   res.clearCookie('user');
+   res.json({logout: true, status: 'You are successfully logged out!'});
  })
 
  export default router;
