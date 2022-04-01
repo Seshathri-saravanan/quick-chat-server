@@ -17,8 +17,7 @@ import cookieParser from "cookie-parser";
 const fileStore = sessionFileStore(session);
 
 const port = 3030;
-const uri =
-  "mongodb+srv://sesha:sesha3@cluster0.ldwlw.mongodb.net/quick-chat-db?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI;
 const connect = await Mongoose.connect(
   uri,
   { useNewUrlParser: true, useUnifiedTopology: true },
