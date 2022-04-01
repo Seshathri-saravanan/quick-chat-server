@@ -17,9 +17,7 @@ const uri = process.env.MONGODB_URI;
 const connect = await Mongoose.connect(
   uri,
   { useNewUrlParser: true, useUnifiedTopology: true },
-  () => {
-    // console.log("connected to the db server");
-  }
+  () => {}
 );
 
 const app = express();
@@ -37,17 +35,14 @@ function addHeaders(req, res, next) {
   );
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader("Access-Control-Max-Age", "1800");
-  console.log(req.body);
   if (req.method == "OPTIONS") {
     res.status(200).end();
-    console.log("204 res", req.body);
   } else next();
 }
 app.use(addHeaders);
 app.use(addHeaders);
 app.use(usersRouter);
 function auth(req, res, next) {
-  console.log("signedcookies", req.signedCookies);
   if (req.signedCookies.user) {
     var username = req.signedCookies.user;
     User.findOne({ username: username })
@@ -70,7 +65,6 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  console.log("connected with socket", socket.id);
   socket.on("message", (data) => {
     Message.create(JSON.parse(data)).then((msg) =>
       io.sockets.send(JSON.stringify(msg))
