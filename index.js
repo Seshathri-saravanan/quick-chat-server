@@ -1,20 +1,16 @@
 import express from "express";
-import bodyParser from "body-parser";
-import { MongoClient } from "mongodb";
 import Mongoose from "mongoose";
 import Message from "./models/Message.js";
 import messageRouter from "./routes/messageRouter.js";
 import usersRouter from "./routes/users.js";
-import passport from "passport";
 import session from "express-session";
 import sessionFileStore from "session-file-store";
-import { Strategy as LocalStrategy } from "passport-local";
 import User from "./models/User.js";
-import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
-const fileStore = sessionFileStore(session);
+import dotenv from "dotenv";
+dotenv.config();
 
 const port = 3030;
 const uri = process.env.MONGODB_URI;
@@ -27,18 +23,7 @@ const connect = await Mongoose.connect(
 );
 
 const app = express();
-/*
-app.use(cors(
-  {
-    origin: 'http://localhost:3000',
-    optionsSuccessStatus: 200,// For legacy browser support
-    methods: "GET, POST",
-    allowedHeaders:"",
-    
-  }
-));
-*/
-app.use(cookieParser("oisdfbkdufhejbfibufgvfuvsfu"));
+app.use(cookieParser(process.env.SECRET_KEY));
 
 function addHeaders(req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
@@ -95,8 +80,5 @@ io.on("connection", (socket) => {
 });
 
 httpServer.listen(process.env.PORT || port, () => {
-  Message.find({}).then((msg) => {
-    //console.log(msg);
-  });
-  console.log(`Example app listening at http://localhost:${port}`);
+  Message.find({}).then((msg) => {});
 });
