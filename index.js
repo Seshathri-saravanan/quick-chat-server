@@ -17,10 +17,15 @@ import cookieParser from "cookie-parser";
 const fileStore = sessionFileStore(session);
 
 const port = 3030;
-const uri = "mongodb+srv://sesha:sesha3@cluster0.ldwlw.mongodb.net/quick-chat-db?retryWrites=true&w=majority";
-const connect = await Mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true },()=>{
-  // console.log("connected to the db server");
-})
+const uri =
+  "mongodb+srv://sesha:sesha3@cluster0.ldwlw.mongodb.net/quick-chat-db?retryWrites=true&w=majority";
+const connect = await Mongoose.connect(
+  uri,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  () => {
+    // console.log("connected to the db server");
+  }
+);
 
 const app = express();
 /*
@@ -36,23 +41,35 @@ app.use(cors(
 */
 app.use(cookieParser("oisdfbkdufhejbfibufgvfuvsfu"));
 
-function addHeaders(req,res,next){
-  res.setHeader('Access-Control-Allow-Origin','https://quick-chat-2021.herokuapp.com',);
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  console.log("setting acces con c header as true",req.headers,res.headers);
-  next();
+function addHeaders(req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, Accept, Accept-Version, Content-Length, Content-MD5, content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, DELETE, HEAD, PUT, PTIONS, POST"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader("Access-Control-Max-Age", "1800");
+  console.log(req.body);
+  if (req.method == "OPTIONS") {
+    res.status(200).end();
+    console.log("204 res", req.body);
+  } else next();
 }
-app.use(addHeaders)
+app.use(addHeaders);
+app.use(addHeaders);
 app.use(usersRouter);
-function auth(req,res,next){
-  console.log("signedcookies",req.signedCookies)
-  if(req.signedCookies.user){
+function auth(req, res, next) {
+  console.log("signedcookies", req.signedCookies);
+  if (req.signedCookies.user) {
     var username = req.signedCookies.user;
-    User.findOne({username:username}).then(user=>next()).catch(err=>next(err));
-  }
-  else{
+    User.findOne({ username: username })
+      .then((user) => next())
+      .catch((err) => next(err));
+  } else {
     next(new Error("UnAuthorized"));
   }
 }
@@ -62,24 +79,25 @@ app.use(messageRouter);
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-   cors: {
-     origin: "*",
-     methods: ["GET", "POST"]
-   }
- });
- 
- io.on("connection", (socket) => {
-   console.log("connected with socket",socket.id);
-   socket.on("message",data=>{
-     Message.create(JSON.parse(data)).then(msg=>io.sockets.send(JSON.stringify(msg)));
-     //console.log("message received from client",socket.id,data);
-     
-    })
- });
- 
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("connected with socket", socket.id);
+  socket.on("message", (data) => {
+    Message.create(JSON.parse(data)).then((msg) =>
+      io.sockets.send(JSON.stringify(msg))
+    );
+    //console.log("message received from client",socket.id,data);
+  });
+});
+
 httpServer.listen(process.env.PORT || port, () => {
-   Message.find({}).then((msg)=>{
-      //console.log(msg);
-   })
-   console.log(`Example app listening at http://localhost:${port}`)
- })
+  Message.find({}).then((msg) => {
+    //console.log(msg);
+  });
+  console.log(`Example app listening at http://localhost:${port}`);
+});
