@@ -9,6 +9,7 @@ messageRouter.route("/account").get((req, res, next) => {
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
   res.json({ account: { username: req.user.username } });
+  res.send();
 });
 messageRouter.route("/contacts").get((req, res, next) => {
   res.statusCode = 200;

@@ -3,6 +3,7 @@ import Mongoose from "mongoose";
 import Message from "./models/Message.js";
 import messageRouter from "./routes/messageRouter.js";
 import usersRouter from "./routes/users.js";
+import authRouter from "./routes/auth.js";
 import session from "express-session";
 import sessionFileStore from "session-file-store";
 import User from "./models/User.js";
@@ -17,19 +18,17 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 const port = 3030;
 const uri = process.env.MONGODB_URI;
-console.log(uri);
 const connect = await Mongoose.connect(
   uri,
-  { useNewUrlParser: true, useUnifiedTopology: true },
+  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
   () => {}
 );
 
 const app = express();
-app.use(cookieParser(process.env.SECRET_KEY));
-app.use(cors());
+//app.options("*", cors());
+//app.use(cors({ origin: true }));
 app.use(bodyParser.json());
 
-/*
 function addHeaders(req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
   res.setHeader(
@@ -47,26 +46,38 @@ function addHeaders(req, res, next) {
   } else next();
 }
 app.use(addHeaders);
-app.use(addHeaders);
-*/
-app.use(usersRouter);
-function auth(req, res, next) {
-  const authtoken = req.headers.authorization.split(" ")[1];
-  var res = jwt.verify(authtoken, process.env.SECRET_KEY);
 
-  if (res.username) {
-    User.findOne({ username: res.username })
-      .then((user) => {
-        req.user = user;
-        next();
-      })
-      .catch((err) => next(err));
-  } else {
-    next(new Error("UnAuthorized"));
+app.use(authRouter);
+
+function auth(req, res, next) {
+  try {
+    const authtokens = req.headers.authorization.split(" ");
+    if (authtokens.length <= 1) {
+      next(new Error("UnAuthorized"));
+      return;
+    }
+    const authtoken = authtokens[1];
+    var res = jwt.verify(authtoken, process.env.SECRET_KEY);
+
+    if (res.username) {
+      User.findOne({ username: res.username })
+        .then((user) => {
+          req.user = user;
+          next();
+        })
+        .catch((err) => next(err));
+    } else {
+      next(new Error("UnAuthorized"));
+    }
+  } catch (err) {
+    return res.status(401).send({
+      message: "Unauthorized",
+    });
   }
 }
 app.use(auth);
 
+app.use(usersRouter);
 app.use(messageRouter);
 
 const httpServer = createServer(app);

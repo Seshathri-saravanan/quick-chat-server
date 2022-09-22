@@ -3,58 +3,44 @@ import bodyParser from "body-parser";
 import User from "../models/User.js";
 import passport from "passport";
 import jwt from "jsonwebtoken";
+import multer from "multer";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const upload = multer({ dest: "routes/uploads" });
 
 var router = Router();
 router.use(bodyParser.json());
+router.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
-router.post("/signup", (req, res, next) => {
-  User.find({ username: req.body.username }).then((users) => {
-    if (users.length != 0) {
-      res.statusCode = 200;
-      res.setHeader("Content-Type", "application/json");
-      res.json({ message: "user already exists" });
-      return;
-    }
-  });
-  User.create(req.body).then((user) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "application/json");
-    res.json({ account: { username: user.username } });
+router.get("/profileimage", (req, res) => {
+  User.findOne({ username: "seshathri" }).then((user) => {
+    console.log(user.profileimage.url);
+    res.sendFile(user.profileimage.url, (err) => console.log("errio", err));
   });
 });
 
-router.post("/login", (req, res, next) => {
-  User.findOne({ username: req.body.username })
-    .then(
-      (user) => {
-        if (user.password != req.body.password) {
-          return next(new Error("incorrect password"));
-        } else {
-          res.statusCode = 200;
-          res.cookie("user", user.username, {
-            signed: true,
-            maxAge: 900000000,
-            sameSite: "none",
-            secure: true,
-          });
-          res.setHeader("Content-Type", "application/json");
-          res.setHeader("Access-Control-Allow-Credentials", true);
-          res.json({
-            token: jwt.sign(user.toJSON(), process.env.SECRET_KEY),
-            account: user,
-          });
-          res.end();
-        }
+router.post("/profileimage", upload.single("myFile"), (req, res, next) => {
+  console.log("in profileIMage", req.file);
+  User.findOneAndUpdate(
+    { username: "seshathri" },
+    {
+      $set: {
+        profileimage: {
+          url: path.join(__dirname + "/uploads/" + req.file.filename),
+        },
       },
-      (err) => next(err)
-    )
-    .catch((err) => next(err));
-});
-
-router.get("/logout", (req, res) => {
-  res.clearCookie("user");
-  res.json({ logout: true, status: "You are successfully logged out!" });
+    }
+  ).then((user) => console.log("user obj", user));
 });
 
 export default router;
