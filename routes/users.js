@@ -30,19 +30,23 @@ router.get("/profileimage/:filename", (req, res) => {
   );
 });
 
-router.post("/profileimage", upload.single("myFile"), (req, res, next) => {
-  console.log("in profileIMage", req.file);
-  User.findOneAndUpdate(
-    { username: req.user?.username || "seshathri" },
-    {
-      $set: {
-        profileimage: {
-          url: path.join(__dirname + "/uploads/" + req.file.filename),
-          filename: req.file.filename,
+router.post(
+  "/profileimage/:username",
+  upload.single("myFile"),
+  (req, res, next) => {
+    console.log("in profileIMage", req.params);
+    User.findOneAndUpdate(
+      { username: req.params.username || "seshathri" },
+      {
+        $set: {
+          profileimage: {
+            url: path.join(__dirname + "/uploads/" + req.file.filename),
+            filename: req.file.filename,
+          },
         },
-      },
-    }
-  ).then((user) => console.log("user obj", user));
-});
+      }
+    ).then((user) => console.log("user obj", user));
+  }
+);
 
 export default router;
