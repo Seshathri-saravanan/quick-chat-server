@@ -2,6 +2,8 @@ import { Router } from "express";
 import bodyParser from "body-parser";
 import User from "../models/User.js";
 import passport from "passport";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 var router = Router();
 router.use(bodyParser.json());
@@ -38,7 +40,11 @@ router.post("/login", (req, res, next) => {
           });
           res.setHeader("Content-Type", "application/json");
           res.setHeader("Access-Control-Allow-Credentials", true);
-          res.json({ account: { username: user.username } });
+          res.json({
+            token: jwt.sign(user.toJSON(), process.env.SECRET_KEY),
+            account: user,
+          });
+          res.end();
         }
       },
       (err) => next(err)

@@ -9,11 +9,15 @@ import User from "./models/User.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import dotenv from "dotenv";
-dotenv.config();
+import bodyParser from "body-parser";
+import jwt from "jsonwebtoken";
 
+dotenv.config();
 const port = 3030;
 const uri = process.env.MONGODB_URI;
+console.log(uri);
 const connect = await Mongoose.connect(
   uri,
   { useNewUrlParser: true, useUnifiedTopology: true },
@@ -22,7 +26,10 @@ const connect = await Mongoose.connect(
 
 const app = express();
 app.use(cookieParser(process.env.SECRET_KEY));
+app.use(cors());
+app.use(bodyParser.json());
 
+/*
 function addHeaders(req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
   res.setHeader(
@@ -41,12 +48,18 @@ function addHeaders(req, res, next) {
 }
 app.use(addHeaders);
 app.use(addHeaders);
+*/
 app.use(usersRouter);
 function auth(req, res, next) {
-  if (req.signedCookies.user) {
-    var username = req.signedCookies.user;
-    User.findOne({ username: username })
-      .then((user) => next())
+  const authtoken = req.headers.authorization.split(" ")[1];
+  var res = jwt.verify(authtoken, process.env.SECRET_KEY);
+
+  if (res.username) {
+    User.findOne({ username: res.username })
+      .then((user) => {
+        req.user = user;
+        next();
+      })
       .catch((err) => next(err));
   } else {
     next(new Error("UnAuthorized"));
