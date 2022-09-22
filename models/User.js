@@ -13,9 +13,8 @@ var User = new Schema({
     required: true,
   },
   profileimage: {
-    data: Buffer,
-    contentType: String,
     url: String,
+    filename: String,
   },
 });
 

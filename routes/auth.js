@@ -23,6 +23,7 @@ router.use(
 );
 
 router.post("/signup", (req, res, next) => {
+  return;
   User.find({ username: req.body.username }).then((users) => {
     if (users.length != 0) {
       res.statusCode = 200;
@@ -48,8 +49,18 @@ router.post("/login", (req, res, next) => {
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
           res.json({
-            token: jwt.sign(user.toJSON(), process.env.SECRET_KEY),
-            account: user,
+            token: jwt.sign(
+              {
+                username: user.username,
+                password: user.password,
+                profileurl: user.profileimage.url,
+              },
+              process.env.SECRET_KEY
+            ),
+            account: {
+              username: user.username,
+              profileurl: user.profileimage.url,
+            },
           });
           res.end();
         }

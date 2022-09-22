@@ -52,6 +52,7 @@ app.use(authRouter);
 function auth(req, res, next) {
   try {
     const authtokens = req.headers.authorization.split(" ");
+
     if (authtokens.length <= 1) {
       next(new Error("UnAuthorized"));
       return;
@@ -60,14 +61,14 @@ function auth(req, res, next) {
     var res = jwt.verify(authtoken, process.env.SECRET_KEY);
 
     if (res.username) {
-      User.findOne({ username: res.username })
-        .then((user) => {
-          req.user = user;
-          next();
-        })
-        .catch((err) => next(err));
+      User.findOne({ username: res.username }).then((user) => {
+        req.user = user;
+        next();
+      });
     } else {
-      next(new Error("UnAuthorized"));
+      return res.status(401).send({
+        message: "Unauthorized",
+      });
     }
   } catch (err) {
     return res.status(401).send({
@@ -75,9 +76,9 @@ function auth(req, res, next) {
     });
   }
 }
+app.use(usersRouter);
 app.use(auth);
 
-app.use(usersRouter);
 app.use(messageRouter);
 
 const httpServer = createServer(app);

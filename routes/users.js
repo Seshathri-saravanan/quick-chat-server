@@ -22,21 +22,23 @@ router.use(
   })
 );
 
-router.get("/profileimage", (req, res) => {
-  User.findOne({ username: "seshathri" }).then((user) => {
-    console.log(user.profileimage.url);
-    res.sendFile(user.profileimage.url, (err) => console.log("errio", err));
-  });
+router.get("/profileimage/:filename", (req, res) => {
+  console.log("paranms", req.params);
+  res.sendFile(
+    path.join(__dirname + "/uploads/" + req.params.filename),
+    (err) => console.log("errio", err)
+  );
 });
 
 router.post("/profileimage", upload.single("myFile"), (req, res, next) => {
   console.log("in profileIMage", req.file);
   User.findOneAndUpdate(
-    { username: "seshathri" },
+    { username: req.user?.username || "seshathri" },
     {
       $set: {
         profileimage: {
           url: path.join(__dirname + "/uploads/" + req.file.filename),
+          filename: req.file.filename,
         },
       },
     }
