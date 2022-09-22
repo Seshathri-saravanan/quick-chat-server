@@ -10,7 +10,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import authenticateRequest from "./Authenticate.js";
 import addHeaders from "./helper.js";
-
+import jwt from "jsonwebtoken";
 dotenv.config();
 const port = 3030;
 const uri = process.env.MONGODB_URI;
@@ -37,11 +37,32 @@ const io = new Server(httpServer, {
   },
 });
 
+var userid_socket = {};
+var socketid_userid = {};
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  const user = jwt.verify(token, process.env.SECRET_KEY);
+  console.log("socket user is", user);
+  if (user) {
+    userid_socket[user.username] = socket;
+    socketid_userid[socket.id] = user.username;
+    next();
+  }
+});
+
 io.on("connection", (socket) => {
+  socket.on("disconnect", () => {
+    const username = socketid_userid[socket.id];
+    userid_socket[username] = null;
+    socketid_userid[socket.id] = null;
+  });
   socket.on("message", (data) => {
-    Message.create(JSON.parse(data)).then((msg) =>
-      io.sockets.send(JSON.stringify(msg))
-    );
+    Message.create(JSON.parse(data)).then((msg) => {
+      const username = msg.receiverUserName;
+      if (userid_socket[username]) {
+        userid_socket[username].send(JSON.stringify(msg));
+      }
+    });
   });
 });
 
