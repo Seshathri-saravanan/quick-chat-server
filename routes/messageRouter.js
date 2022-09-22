@@ -1,14 +1,13 @@
 import { Router } from "express";
 import bodyParser from "body-parser";
-import mongoose from "mongoose";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
 const messageRouter = Router();
 messageRouter.use(bodyParser.json());
+
 messageRouter.route("/account").get((req, res, next) => {
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
-  console.log("getaccount", req.user);
   res.json({
     account: {
       username: req.user.username,
@@ -16,13 +15,7 @@ messageRouter.route("/account").get((req, res, next) => {
     },
   });
 });
-messageRouter.route("/contacts").get((req, res, next) => {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "application/json");
-  User.find({}).then((users) => {
-    res.json({ contacts: users });
-  });
-});
+
 messageRouter
   .route("/message")
   .get((req, res, next) => {
