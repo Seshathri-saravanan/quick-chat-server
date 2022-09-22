@@ -62,6 +62,7 @@ io.on("connection", (socket) => {
       if (userid_socket[username]) {
         userid_socket[username].send(JSON.stringify(msg));
       }
+      socket.send(JSON.stringify(msg));
     });
   });
 });

@@ -2,7 +2,12 @@ import { Router } from "express";
 import bodyParser from "body-parser";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const getSignedToken = (user) => {
   return jwt.sign(
     {
@@ -36,6 +41,14 @@ router.post("/signup", (req, res, next) => {
     res.setHeader("Content-Type", "application/json");
     res.json({ account: { username: user.username } });
   });
+});
+
+router.get("/profileimage/:filename", (req, res) => {
+  console.log("paranms", req.params);
+  res.sendFile(
+    path.join(__dirname + "/uploads/" + req.params.filename),
+    (err) => console.log("errio", err)
+  );
 });
 
 router.post("/login", (req, res, next) => {

@@ -19,14 +19,6 @@ router.use(
   })
 );
 
-router.get("/profileimage/:filename", (req, res) => {
-  console.log("paranms", req.params);
-  res.sendFile(
-    path.join(__dirname + "/uploads/" + req.params.filename),
-    (err) => console.log("errio", err)
-  );
-});
-
 router.post(
   "/profileimage/:username",
   upload.single("myFile"),
