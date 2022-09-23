@@ -11,7 +11,7 @@ messageRouter.route("/account").get((req, res, next) => {
   res.json({
     account: {
       username: req.user.username,
-      profileurl: req.user.profileimage.filename,
+      profileimage: req.user.profileimage,
     },
   });
 });

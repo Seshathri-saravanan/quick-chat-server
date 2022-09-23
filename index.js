@@ -4,6 +4,7 @@ import Message from "./models/Message.js";
 import messageRouter from "./routes/messageRouter.js";
 import usersRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
+import contactRouter from "./routes/contacts.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
@@ -29,6 +30,8 @@ app.use(authenticateRequest);
 
 app.use(usersRouter);
 app.use(messageRouter);
+app.use(contactRouter);
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {

@@ -14,3 +14,7 @@ export default function addHeaders(req, res, next) {
     res.status(200).end();
   } else next();
 }
+
+export function getProfilePath(filename) {
+  return path.join(__dirname + "/uploads/" + filename);
+}

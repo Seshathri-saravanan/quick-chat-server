@@ -3,19 +3,15 @@ import passportLocalMongoose from "passport-local-mongoose";
 const { Schema } = mongoose;
 
 var Contact = new Schema({
-  username1: {
+  invitor: {
     type: String,
     required: true,
   },
-  username2: {
+  acceptor: {
     type: String,
     required: true,
   },
-  status1: {
-    type: Boolean,
-    default: false,
-  },
-  status2: {
+  status: {
     type: Boolean,
     default: false,
   },
