@@ -19,6 +19,19 @@ router.use(
   })
 );
 
+const getSearchUsers = async (users, currentusername) => {
+  var updated_users = [];
+  for (var user of users) {
+    if (user.username != currentusername)
+      updated_users.push({
+        username: user.username,
+        profileimage: user.profileimage,
+        status: await getStatus(currentusername, user.username),
+      });
+  }
+  return updated_users;
+};
+
 router.post(
   "/profileimage/:username",
   upload.single("myFile"),
@@ -37,13 +50,6 @@ router.post(
     ).then((user) => console.log("user obj", user));
   }
 );
-
-router.get("/users/:searchquery", (req, res, next) => {
-  const { searchquery } = req.params;
-  User.find({ username: { $regex: searchquery } }).then((users) => {
-    res.json({ users });
-  });
-});
 
 const getStatus = async (username1, username2) => {
   var contact = await Contact.findOne({
@@ -68,17 +74,16 @@ const getStatus = async (username1, username2) => {
 router.get("/users/", (req, res, next) => {
   const currentusername = req.user.username;
   User.find().then(async (users) => {
-    var updated_users = [];
-    for (var user of users) {
-      if (user.username != currentusername)
-        updated_users.push({
-          username: user.username,
-          profileimage: user.profileimage,
-          status: await getStatus(currentusername, user.username),
-        });
-    }
-    console.log("users-->", updated_users);
-    res.json({ users: updated_users });
+    res.json({ users: await getSearchUsers(users, currentusername) });
+  });
+});
+
+router.get("/users/:searchquery", (req, res, next) => {
+  const { searchquery } = req.params;
+  const currentusername = req.user.username;
+
+  User.find({ username: { $regex: searchquery } }).then(async (users) => {
+    res.json({ users: await getSearchUsers(users, currentusername) });
   });
 });
 

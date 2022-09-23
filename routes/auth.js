@@ -45,8 +45,10 @@ router.post("/signup", (req, res, next) => {
 
 router.get("/profileimage/:filename", (req, res) => {
   console.log("paranms", req.params);
+  const generic_avatar = path.join(__dirname + "/public/images/avatar.png");
+  const profile = path.join(__dirname + "/uploads/" + req.params.filename);
   res.sendFile(
-    path.join(__dirname + "/uploads/" + req.params.filename),
+    req.params.filename == "undefined" ? generic_avatar : profile,
     (err) => console.log("errio", err)
   );
 });
