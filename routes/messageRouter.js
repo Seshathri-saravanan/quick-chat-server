@@ -6,6 +6,7 @@ const messageRouter = Router();
 messageRouter.use(bodyParser.json());
 
 messageRouter.route("/account").get((req, res, next) => {
+  console.log("In account-->", req.user);
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
   res.json({

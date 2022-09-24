@@ -45,7 +45,7 @@ var socketid_userid = {};
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
   const user = jwt.verify(token, process.env.SECRET_KEY);
-  console.log("socket user is", user);
+  //console.log("socket user is", user);
   if (user) {
     userid_socket[user.username] = socket;
     socketid_userid[socket.id] = user.username;

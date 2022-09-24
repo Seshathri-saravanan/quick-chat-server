@@ -18,3 +18,12 @@ export default function addHeaders(req, res, next) {
 export function getProfilePath(filename) {
   return path.join(__dirname + "/uploads/" + filename);
 }
+
+export function getUserDetails(user) {
+  if (!user) return {};
+  return {
+    username: user.username,
+    name: user.name,
+    profileimage: user.profileimage,
+  };
+}

@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { generateFromEmail, generateUsername } from "unique-username-generator";
+import { getUserDetails } from "../helper.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,15 +30,16 @@ router.use(
 );
 
 router.post("/signup", (req, res, next) => {
-  User.find({ username: req.body.username }).then((users) => {
+  User.find({ email: req.body.email }).then((users) => {
     if (users.length != 0) {
-      res.statusCode = 200;
+      res.statusCode = 400;
       res.setHeader("Content-Type", "application/json");
       res.json({ message: "user already exists" });
       return;
     }
   });
-  User.create(req.body).then((user) => {
+  const username = generateFromEmail(req.body.email);
+  User.create({ ...req.body, username }).then((user) => {
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json");
     res.json({ account: { username: user.username } });
@@ -54,7 +57,7 @@ router.get("/profileimage/:filename", (req, res) => {
 });
 
 router.post("/login", (req, res, next) => {
-  User.findOne({ username: req.body.username })
+  User.findOne({ email: req.body.email })
     .then(
       (user) => {
         if (user.password != req.body.password) {
@@ -64,10 +67,7 @@ router.post("/login", (req, res, next) => {
           res.setHeader("Content-Type", "application/json");
           res.json({
             token: getSignedToken(user),
-            account: {
-              username: user.username,
-              profileurl: user.profileimage.url,
-            },
+            account: getUserDetails(user),
           });
           res.end();
         }

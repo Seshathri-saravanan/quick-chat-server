@@ -2,6 +2,7 @@ import { Router } from "express";
 import bodyParser from "body-parser";
 import User from "../models/User.js";
 import Contact from "../models/Contact.js";
+import { getUserDetails } from "../helper.js";
 
 var router = Router();
 router.use(bodyParser.json());
@@ -15,8 +16,7 @@ const getRequestFromContact = async (contact) => {
   var res = {};
   const user = await User.findOne({ username: contact.invitor });
   res = {
-    username: user.username,
-    profileimage: user.profileimage,
+    ...getUserDetails(user),
     id: contact._id,
     status: "accept",
   };
@@ -35,9 +35,13 @@ router.get("/contacts", (req, res, next) => {
     const usercontacts = [];
     for (var contact of contacts) {
       if (contact.acceptor == currentUsername)
-        usercontacts.push(await User.findOne({ username: contact.invitor }));
+        usercontacts.push(
+          getUserDetails(await User.findOne({ username: contact.invitor }))
+        );
       else
-        usercontacts.push(await User.findOne({ username: contact.acceptor }));
+        usercontacts.push(
+          getUserDetails(await User.findOne({ username: contact.acceptor }))
+        );
     }
     res.json({ contacts: usercontacts });
   });

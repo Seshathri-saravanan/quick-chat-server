@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import Contact from "../models/Contact.js";
+import { getUserDetails } from "../helper.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,8 +25,7 @@ const getSearchUsers = async (users, currentusername) => {
   for (var user of users) {
     if (user.username != currentusername)
       updated_users.push({
-        username: user.username,
-        profileimage: user.profileimage,
+        ...getUserDetails(user),
         status: await getStatus(currentusername, user.username),
       });
   }
@@ -47,7 +47,10 @@ router.post(
           },
         },
       }
-    ).then((user) => console.log("user obj", user));
+    ).then((user) => {
+      res.sendStatus(200);
+      console.log("user obj", user);
+    });
   }
 );
 
