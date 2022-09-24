@@ -7,7 +7,8 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { generateFromEmail, generateUsername } from "unique-username-generator";
 import { getUserDetails } from "../helper.js";
-
+import Image from "../models/Image.js";
+import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const getSignedToken = (user) => {
@@ -51,13 +52,26 @@ router.post("/signup", (req, res, next) => {
 });
 
 router.get("/profileimage/:filename", (req, res) => {
-  console.log("paranms", req.params);
-  const generic_avatar = path.join(__dirname + "/public/images/avatar.png");
+  //console.log("paranms", req.params);
+  /*
+  
   const profile = path.join(__dirname + "/uploads/" + req.params.filename);
   res.sendFile(
     req.params.filename == "undefined" ? generic_avatar : profile,
     (err) => console.log("errio", err)
   );
+  */
+  const filename = req.params.filename;
+  const generic_avatar = path.join(__dirname + "/public/images/avatar.png");
+  const profile = path.join(__dirname + "/uploads/" + req.params.filename);
+  Image.findOne({ name: filename }).then((image) => {
+    if (image == null) {
+      res.sendFile(generic_avatar);
+      return;
+    }
+    fs.writeFileSync(profile, image.img.data);
+    res.sendFile(profile);
+  });
 });
 
 router.post("/login", (req, res, next) => {

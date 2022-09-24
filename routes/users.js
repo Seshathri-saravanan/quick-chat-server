@@ -7,7 +7,8 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import Contact from "../models/Contact.js";
 import { getUserDetails } from "../helper.js";
-
+import Image from "../models/Image.js";
+import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const upload = multer({ dest: "routes/uploads" });
@@ -35,8 +36,23 @@ const getSearchUsers = async (users, currentusername) => {
 router.post(
   "/profileimage/:username",
   upload.single("myFile"),
-  (req, res, next) => {
+  async (req, res, next) => {
     console.log("in profileIMage", req.params);
+    var obj = {
+      name: req.file.filename,
+      img: {
+        data: fs.readFileSync(
+          path.join(__dirname + "/uploads/" + req.file.filename)
+        ),
+        contentType: req.file.mimetype,
+      },
+    };
+    await Image.create(obj, (err, item) => {
+      if (err) {
+        console.log(err);
+      } else {
+      }
+    });
     User.findOneAndUpdate(
       { username: req.params.username || "seshathri" },
       {
@@ -49,7 +65,7 @@ router.post(
       }
     ).then((user) => {
       res.sendStatus(200);
-      console.log("user obj", user);
+      console.log("user obj-->", user);
     });
   }
 );
