@@ -15,6 +15,7 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 const port = 3030;
 const uri = process.env.MONGODB_URI;
+//console.log(uri);
 const connect = await Mongoose.connect(
   uri,
   { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },

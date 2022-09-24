@@ -30,20 +30,24 @@ router.use(
 );
 
 router.post("/signup", (req, res, next) => {
-  User.find({ email: req.body.email }).then((users) => {
-    if (users.length != 0) {
-      res.statusCode = 400;
+  try {
+    User.find({ email: req.body.email }).then((users) => {
+      if (users.length != 0) {
+        res.statusCode = 400;
+        res.setHeader("Content-Type", "application/json");
+        res.json({ message: "user already exists" });
+        return;
+      }
+    });
+    const username = generateFromEmail(req.body.email);
+    User.create({ ...req.body, username }).then((user) => {
+      res.statusCode = 200;
       res.setHeader("Content-Type", "application/json");
-      res.json({ message: "user already exists" });
-      return;
-    }
-  });
-  const username = generateFromEmail(req.body.email);
-  User.create({ ...req.body, username }).then((user) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "application/json");
-    res.json({ account: { username: user.username } });
-  });
+      res.json({ account: { username: user.username } });
+    });
+  } catch (err) {
+    console.log("signup error", err);
+  }
 });
 
 router.get("/profileimage/:filename", (req, res) => {
