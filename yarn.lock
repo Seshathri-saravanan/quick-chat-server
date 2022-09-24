@@ -1625,6 +1625,11 @@ undefsafe@^2.0.5:
   resolved "https://registry.yarnpkg.com/undefsafe/-/undefsafe-2.0.5.tgz#38733b9327bdcd226db889fb723a6efd162e6e2c"
   integrity sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==
 
+unique-username-generator@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/unique-username-generator/-/unique-username-generator-1.1.1.tgz#7434bd3e9b53110342a752de18ae715d56e1b254"
+  integrity sha512-0FOgI/8T7czM9d7OmDLLTf/DrmsGKYgz6+AmgTEwV61ydbtr7NWmROKV+vY68e/V9xtIpidIY3hYiwEJB6Tg6Q==
+
 universalify@^0.1.0:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
